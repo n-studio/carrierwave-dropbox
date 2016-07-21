@@ -12,7 +12,7 @@ module CarrierWave
       def store!(file)
         location = (config[:access_type] == "dropbox") ? "/#{uploader.store_path}" : uploader.store_path
         file_hash = dropbox_client.put_file(location, file.to_file)
-        CarrierWave::SanitizedFile.new(dropbox_client.media(file_hash[:path])["url"])
+        CarrierWave::SanitizedFile.new(dropbox_client.media(uploader.store_path)["url"])
       end
 
       # Retrieve a single file
