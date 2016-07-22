@@ -15,6 +15,8 @@ ActiveRecord::Base.establish_connection(
 ActiveRecord::Schema.define do
   create_table :images do |t|
     t.string :attachment
+    t.string :content_type
+    t.string :file_size
   end
 end
 
@@ -33,6 +35,13 @@ class ImageUploader < CarrierWave::Uploader::Base
   def store_dir
     "test/images/#{model.id}"
   end
+
+  process :save_meta_data
+
+  def save_meta_data
+    model.content_type = file.content_type
+    model.file_size = file.size
+  end
 end
 
 class Image < ActiveRecord::Base
@@ -46,5 +55,9 @@ class DummyApplication < Sinatra::Application
 
   put '/image/edit/:id' do |id|
     Image.find(id).update(attachment: params[:attachment])
+  end
+
+  delete '/image/:id' do |id|
+    Image.find(id).destroy
   end
 end
